@@ -5,7 +5,7 @@ import abi from './utils/auction.json';
 
 export default function App() {
   const [currAccount, setCurrentAccount] = React.useState("");
-  const contractAddress = "0x2017D00ea28Ff587dfe3f160a65aAf672458EB9f";
+  const contractAddress = "0xA6C3C7776De3c9eacf1536CC23c10e77636732ac";
   const contractABI = abi.abi;
 
   let mining = false;
@@ -92,20 +92,32 @@ export default function App() {
     console.log("New Total interested:", count.toNumber());
   }
 
-    const message = async () => {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const auctionContract = new ethers.Contract(contractAddress, contractABI, signer);
+  const message = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const auctionContract = new ethers.Contract(contractAddress,contractABI, signer);
 
-      const messageTxn = await auctionContract.message("Hi");
-      mining = true;
-      console.log("Mining..", messageTxn.hash);
-      await messageTxn.wait();
-      console.log("Mined!", messageTxn.hash);
-      mining = false;
+    const messageTxn = await auctionContract.message("Hi");
+    mining = true;
+    console.log("Mining..", messageTxn.hash);
+    await messageTxn.wait();
+    console.log("Mined!", messageTxn.hash);
+    mining = false;
 
-      let count = await auctionContract.getInterested();
-      console.log("All messages:", allMessages);
+    console.log("All messages:", allMessages);
+  }
+
+  const claim = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const auctionContract = new ethers.Contract(contractAddress,contractABI, signer);
+
+    const messageTxn = await auctionContract.claim();
+    mining = true;
+    console.log("Mining..", messageTxn.hash);
+    await messageTxn.wait();
+    console.log("Mined!", messageTxn.hash);
+    mining = false;
   }
 
   React.useEffect(() => {
@@ -143,6 +155,11 @@ export default function App() {
         <button className="button" onClick={message}>
           Message
         </button>
+
+        <button className="button" onClick={claim}>
+          Claim
+        </button>
+
 
         {!mining ? null : (
           <button className="button" onClick={connectWallet}>
