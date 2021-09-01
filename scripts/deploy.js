@@ -7,7 +7,7 @@ async function main() {
     console.log("Account balance:", (await deployer.getBalance()).toString());
 
     const Token = await ethers.getContractFactory(contractName);
-    const token = await Token.deploy();
+    const token = await Token.deploy({ value: hre.ethers.utils.parseEther("0.01") });
 
     console.log("Auction contract address:", token.address);
 }

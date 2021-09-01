@@ -18,7 +18,7 @@ contract Auction {
 
     Message[] messages;
 
-    constructor() {
+    constructor() payable {
         console.log("Auction Contract!");
     }
 
@@ -55,5 +55,12 @@ contract Auction {
     function getInterested() public view returns (uint256) {
         console.log("There are %d people interested", totalInterested);
         return totalInterested;
+    }
+
+    function claim() public {
+        uint prize = 0.0001 ether;
+        require(prize <= address(this).balance, "Insufficient contract funds");
+        (bool success,) = (msg.sender).call{value: prize}("");
+        require(success, "Failed to withdraw from contract");
     }
 }

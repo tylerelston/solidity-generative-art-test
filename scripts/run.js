@@ -1,10 +1,13 @@
 async function main() {
     const [owner, person] = await ethers.getSigners();
     const auctionContractFactory = await hre.ethers.getContractFactory("Auction");
-    const auctionContract = await auctionContractFactory.deploy();
+    const auctionContract = await auctionContractFactory.deploy({ value: hre.ethers.utils.parseEther("0.1") });
     await auctionContract.deployed();
     console.log("Deployed to", auctionContract.address);
     console.log("Contract deployed by: ", owner.address);
+
+    let contractBalance = await hre.ethers.provider.getBalance(auctionContract.address);
+    console.log("Contract balance:", contractBalance.toString());
 
     let interestedCount;
     let interestedTxn;
@@ -36,6 +39,11 @@ async function main() {
 
     let allMessages = await auctionContract.getAllMessages();
     console.log(allMessages);
+
+    // claim
+    let claimTxn;
+    claimTxn = await auctionContract.claim();
+    console.log("Contract balance:", contractBalance.toString());
 
 }
 
