@@ -5,9 +5,30 @@ import abi from './utils/auction.json';
 
 export default function App() {
   const [currAccount, setCurrentAccount] = React.useState("");
-  const contractAddress = "0x4657a314ccfbeB47f42D6581e78B2a9D37Acc9C4";
+  const contractAddress = "0x2017D00ea28Ff587dfe3f160a65aAf672458EB9f";
   const contractABI = abi.abi;
+
   let mining = false;
+
+
+  const [allMessages, setAllMessages] = React.useState([]);
+  async function getAllMessages() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const auctionContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+    let messages = await auctionContract.getAllMessages();
+
+    let messagesCleaned = [];
+    messages.forEach(message => {
+      messagesCleaned.push({
+        address: message.address,
+        timestamp: new Date(message.timestamp * 1000),
+        message: message.message
+      })
+    setAllMessages(messagesCleaned);
+    })
+  }
 
   const checkIfWalletConnected = () => {
     const { ethereum } = window;
@@ -15,7 +36,9 @@ export default function App() {
       console.log("You need a MetaMask account!");
       return;
     } else {
+      getAllMessages();
       console.log("Ethereum object:", ethereum);
+      console.log("Messages:", allMessages);
     }
 
     ethereum.request({method: "eth_accounts"})
@@ -23,7 +46,6 @@ export default function App() {
         if (accounts.length !== 0) {
           const account = accounts[0];
           console.log("Found authorized account:", account);
-
           setCurrentAccount(account);
         } else {
           console.log("No authorized account found");
@@ -70,6 +92,22 @@ export default function App() {
     console.log("New Total interested:", count.toNumber());
   }
 
+    const message = async () => {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const auctionContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+      const messageTxn = await auctionContract.message("Hi");
+      mining = true;
+      console.log("Mining..", messageTxn.hash);
+      await messageTxn.wait();
+      console.log("Mined!", messageTxn.hash);
+      mining = false;
+
+      let count = await auctionContract.getInterested();
+      console.log("All messages:", allMessages);
+  }
+
   React.useEffect(() => {
     console.log("Test");
     checkIfWalletConnected();
@@ -100,6 +138,10 @@ export default function App() {
 
         <button className="button" onClick={interested}>
           Interested
+        </button>
+
+        <button className="button" onClick={message}>
+          Message
         </button>
 
         {!mining ? null : (
