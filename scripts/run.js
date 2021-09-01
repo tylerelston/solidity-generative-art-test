@@ -7,7 +7,7 @@ async function main() {
     console.log("Contract deployed by: ", owner.address);
 
     let interestedCount;
-    let interestedTxn; 
+    let interestedTxn;
 
     // calls from contract owner
     await auctionContract.getInterested();
@@ -24,6 +24,19 @@ async function main() {
     await interestedTxn.wait();
 
     interestedCount = await auctionContract.getInterested();
+
+    // leave message
+
+    let messageTxn;
+    messageTxn = await auctionContract.message("Message one");
+    await messageTxn.wait();
+
+    messageTxn = await auctionContract.message("Message two");
+    await messageTxn.wait();
+
+    let allMessages = await auctionContract.getAllMessages();
+    console.log(allMessages);
+
 }
 
 main()

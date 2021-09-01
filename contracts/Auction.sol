@@ -8,8 +8,28 @@ contract Auction {
     uint256 totalInterested;
     mapping(address => bool) public peopleInterested;
 
+    event NewInterested(address indexed from, uint timestamp, string message);
+
+    struct Message {
+        address sender;
+        string message;
+        uint timestamp;
+    }
+
+    Message[] messages;
+
     constructor() {
         console.log("Auction Contract!");
+    }
+
+    function message(string memory _message) public {
+        console.log("%s says", msg.sender, _message);
+        messages.push(Message(msg.sender, _message, block.timestamp));
+        emit NewInterested(msg.sender, block.timestamp, _message);
+    }
+
+    function getAllMessages() view public returns (Message[] memory){
+        return messages;
     }
 
     function interested() public {
