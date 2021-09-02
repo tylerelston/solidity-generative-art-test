@@ -5,8 +5,10 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract Auction {
-    uint256 totalInterested;
+    uint totalInterested;
+    uint private seed;
     mapping(address => bool) public peopleInterested;
+    mapping(address => uint) public lastClaimedAt;
 
     event NewInterested(address indexed from, uint timestamp, string message);
 
@@ -58,9 +60,17 @@ contract Auction {
     }
 
     function claim() public {
-        uint prize = 0.0001 ether;
-        require(prize <= address(this).balance, "Insufficient contract funds");
-        (bool success,) = (msg.sender).call{value: prize}("");
-        require(success, "Failed to withdraw from contract");
+        require(lastClaimedAt[msg.sender] + 5 minutes < block.timestamp, "You can only claim once every 5 minutes");
+
+        uint randomNum = (block.difficulty + block.timestamp + seed) % 100;
+        seed = randomNum;
+
+        if (randomNum < 50){
+            uint prize = 0.0001 ether;
+            console.log("You won:", prize);
+            require(prize <= address(this).balance, "Insufficient contract funds");
+            (bool success,) = (msg.sender).call{value: prize}("");
+            require(success, "Failed to withdraw from contract");
+        }
     }
 }

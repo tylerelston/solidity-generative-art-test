@@ -44,6 +44,8 @@ async function main() {
     let claimTxn;
     claimTxn = await auctionContract.claim();
     console.log("Contract balance:", contractBalance.toString());
+    claimTxn = await auctionContract.claim();
+    console.log("Contract balance:", contractBalance.toString());
 
 }
 
