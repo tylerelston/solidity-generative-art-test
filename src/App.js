@@ -8,7 +8,6 @@ export default function App() {
   const [currAccount, setCurrentAccount] = React.useState("");
   const contractAddress = "0xAe72Edf308cf735f6b91ea12EC788dFf9000ff9c";
   const contractABI = abi.abi;
-  const canvas = Canvas;
 
   let mining = false;
 
