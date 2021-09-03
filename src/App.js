@@ -2,11 +2,13 @@ import * as React from "react";
 import { ethers } from "ethers";
 import './App.css';
 import abi from './utils/auction.json';
+import Canvas from "./canvas.js";
 
 export default function App() {
   const [currAccount, setCurrentAccount] = React.useState("");
-  const contractAddress = "0xA6C3C7776De3c9eacf1536CC23c10e77636732ac";
+  const contractAddress = "0xAe72Edf308cf735f6b91ea12EC788dFf9000ff9c";
   const contractABI = abi.abi;
+  const canvas = Canvas;
 
   let mining = false;
 
@@ -57,14 +59,14 @@ export default function App() {
     const { ethereum } = window;
     if (!ethereum) {
       alert("MetaMask is required to use this site");
-    }
-
+    } else {
     ethereum.request({method: "eth_requestAccounts"})
       .then(accounts => {
         console.log("Connected", accounts[0]);
         setCurrentAccount(accounts[0]);
       })
       .catch(err => console.log(err));
+    }
   }
 
   const getTotalInterested = async () => {
@@ -121,7 +123,6 @@ export default function App() {
   }
 
   React.useEffect(() => {
-    console.log("Test");
     checkIfWalletConnected();
   }, [])
   
@@ -140,25 +141,26 @@ export default function App() {
 
         {currAccount ? null : (
           <button className="button" onClick={connectWallet}>
-          Click me
+          Connect Wallet
         </button>
         )}
 
-        <button className="button" onClick={getTotalInterested}>
+        {(!currAccount ? null : <button className="button" onClick={getTotalInterested}>
           Total Interested
         </button>
+        )}
 
-        <button className="button" onClick={interested}>
+        {(!currAccount ? null :<button className="button" onClick={interested}>
           Interested
-        </button>
+        </button>)}
 
-        <button className="button" onClick={message}>
+        {(!currAccount ? null :<button className="button" onClick={message}>
           Message
-        </button>
+        </button>)}
 
-        <button className="button" onClick={claim}>
+        {(!currAccount ? null :<button className="button" onClick={claim}>
           Claim
-        </button>
+        </button>)}
 
 
         {!mining ? null : (
@@ -166,6 +168,10 @@ export default function App() {
           <span role="img" aria-label="hourglass">⏳</span>
         </button>
         )}
+
+        <div>
+        <Canvas />
+        </div>
 
       </div>
     </div>
