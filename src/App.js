@@ -108,7 +108,7 @@ export default function App() {
     console.log("All messages:", allMessages);
   }
 
-  const claim = async () => {
+  const claimETH = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const auctionContract = new ethers.Contract(contractAddress,contractABI, signer);
@@ -119,6 +119,19 @@ export default function App() {
     await messageTxn.wait();
     console.log("Mined!", messageTxn.hash);
     mining = false;
+  }
+
+    const claimNFT = async () => {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const auctionContract = new ethers.Contract(contractAddress,contractABI, signer);
+
+      const nftTxn = await auctionContract.claim();
+      mining = true;
+      console.log("Mining..", nftTxn.hash);
+      await nftTxn.wait();
+      console.log("Mined!", nftTxn.hash);
+      mining = false;
   }
 
   React.useEffect(() => {
@@ -157,8 +170,8 @@ export default function App() {
           Message
         </button>)}
 
-        {(!currAccount ? null :<button className="button" onClick={claim}>
-          Claim
+        {(!currAccount ? null :<button className="button" onClick={claimETH}>
+          Get some ETH!
         </button>)}
 
 
@@ -171,6 +184,11 @@ export default function App() {
         <div>
         <Canvas />
         </div>
+
+        
+        {(!currAccount ? null :<button className="button" onClick={claimNFT}>
+          Claim NFT
+        </button>)}
 
       </div>
     </div>
